@@ -40,7 +40,11 @@ Die App läuft vollständig im Browser und benötigt kein Backend, keine Datenba
 /
 ├── index.html
 ├── style.css
-└── app.js
+├── app.js
+├── tent-types.js
+├── recipe-store.js
+├── admin.js
+└── admin.css
 ```
 
 ## Dateien
@@ -51,10 +55,11 @@ Enthält die Grundstruktur der App:
 
 - Kopfbereich
 - Auswahlbereich für die Zeltarten
+- eingebetteten Admin-Bereich (ein-/ausblendbar)
 - Stücklistenbereich
 - Buttons für Zurücksetzen und Kopieren
 - zusätzlicher Button für Textansicht (Desktop)
-- Einbindung von `style.css` und `app.js`
+- Einbindung von `style.css`, `admin.css` und der JavaScript-Dateien in fester Reihenfolge
 
 ### `style.css`
 
@@ -70,7 +75,7 @@ Enthält das komplette Styling:
 
 Enthält die komplette Logik:
 
-- zentrale Materialdaten
+- Laden der aktiven Rezeptdaten über `recipe-store.js`
 - Zustand der ausgewählten Zelte
 - Berechnung der Stückliste
 - Rendering der Karten und Tabelle
@@ -79,9 +84,39 @@ Enthält die komplette Logik:
 - Reset-Funktion
 - optionale Speicherung im `localStorage`
 
+### `tent-types.js`
+
+Enthält die komplette Materialkonfiguration:
+
+- globale Komponenten (z. B. Hering, Abspannschnur)
+- zelt-spezifische Komponenten
+- Varianten je Zeltart
+- Aufbauoptionen (`fixed`, `tripod`)
+- finale Zuordnung im exportierten Objekt `tentTypes`
+
+### `recipe-store.js`
+
+Enthaelt den Daten-Layer fuer Rezepte:
+
+- laedt Default-Rezepte aus `tent-types.js`
+- liest/speichert Admin-Rezepte in `localStorage`
+- importiert/exportiert JSON
+- normalisiert und validiert Rezeptdaten
+
+### `admin.js`, `admin.css`
+
+Eingebettete Admin-Oberflaeche zur Rezeptpflege in `index.html`:
+
+- PIN-Schutz (erste Implementierung: `hubi32`)
+- Bearbeiten von Rezeptbereichen (Varianten/Aufbauoptionen/Basis)
+- Komponenten-Bibliothek mit Suche
+- Tabelleneditor fuer Komponenten
+- Mengen-Quickbuttons, Reihenfolge hoch/runter, Zeilen loeschen
+- Import/Export von Rezepten als JSON
+
 ## Materialdaten anpassen
 
-Alle Materialregeln werden zentral in `app.js` im Objekt `tentTypes` gepflegt.
+Alle Materialregeln werden zentral in `tent-types.js` im exportierten Objekt `tentTypes` gepflegt.
 
 Beispiel:
 
@@ -90,22 +125,13 @@ const tentTypes = {
   kohte: {
     label: "Kohte",
     description: "Kohte",
-    components: [
-      { id: "kotenplane", label: "Kohteplane", marking: "Kennzeichnung später eintragen", qty: 4 },
-      { id: "seitenstange_kohte", label: "Seitenstange Kohte", marking: "Kennzeichnung später eintragen", qty: 8 }
-    ],
-    poleOptions: {
-      fixed: [
-        { id: "mittelstange_kohte", label: "Mittelstange Kohte", marking: "Kennzeichnung später eintragen", qty: 1 }
-      ],
-      tripod: [
-        { id: "dreibein_stange", label: "Dreibein-Stange", marking: "Kennzeichnung später eintragen", qty: 3 },
-        { id: "dreibein_verbinder", label: "Dreibein-Verbinder", marking: "Kennzeichnung später eintragen", qty: 1 }
-      ]
-    }
+    components: baseComponents.kohte,
+    poleOptions: poleOptions.kohte
   }
 };
 ```
+
+Hinweis: Gleiche Material-`id` wird über alle Zeltarten hinweg zusammengeführt. Darum sind globale Positionen wie Heringe und Abspannschnüre zentral definiert.
 
 ### Wichtige Felder
 
@@ -118,7 +144,13 @@ const tentTypes = {
 
 ## Neue Zeltart hinzufügen
 
-Eine neue Zeltart wird im Objekt `tentTypes` ergänzt.
+Eine neue Zeltart wird in `tent-types.js` in fünf Schritten ergänzt:
+
+1. `tentSpecificComponents.<zeltId>` anlegen
+2. optional `variants.<zeltId>` anlegen
+3. `poleOptions.<zeltId>` anlegen
+4. optional `baseComponents.<zeltId>` anlegen
+5. in `tentTypes.<zeltId>` referenzieren
 
 Minimaler Aufbau:
 
@@ -126,18 +158,9 @@ Minimaler Aufbau:
 neueZeltart: {
   label: "Neue Zeltart",
   description: "Kurze Beschreibung",
-  components: [
-    { id: "material_id", label: "Materialname", marking: "Kennzeichnung", qty: 1 }
-  ],
-  poleOptions: {
-    fixed: [
-      { id: "mittelstange", label: "Mittelstange", marking: "Kennzeichnung", qty: 1 }
-    ],
-    tripod: [
-      { id: "dreibein_stange", label: "Dreibein-Stange", marking: "Kennzeichnung", qty: 3 },
-      { id: "dreibein_verbinder", label: "Dreibein-Verbinder", marking: "Kennzeichnung", qty: 1 }
-    ]
-  }
+  variants: variants.neueZeltart,          // optional
+  components: baseComponents.neueZeltart,  // optional
+  poleOptions: poleOptions.neueZeltart
 }
 ```
 
@@ -145,14 +168,26 @@ Danach wird die neue Zeltart automatisch als Karte angezeigt.
 
 ## Lokal starten
 
-Die App kann direkt im Browser geöffnet werden.
+Die App kann direkt lokal per Doppelklick auf `index.html` oder über einen einfachen lokalen Webserver gestartet werden.
 
 1. Dateien herunterladen oder kopieren
-2. `index.html` per Doppelklick öffnen
+2. `index.html` im Browser öffnen
 3. Zelte auswählen
 4. Stückliste prüfen oder kopieren
 
-Ein lokaler Server ist nicht erforderlich.
+Admin-Bereich aufrufen:
+
+1. In `index.html` im Bereich **Zeltarten** den Hilfe-Block aufklappen
+2. Unterhalb des Hilfe-Blocks auf "Admin Rezepte" klicken
+3. PIN eingeben (`hubi32`)
+4. Rezepte bearbeiten und speichern
+5. Mit "Zurueck zum Rechner" zur Hauptansicht wechseln
+
+Optionaler Start per lokalem Server (wenn Node.js vorhanden):
+
+```bash
+npx serve .
+```
 
 ## Einbindung in Jimdo
 
@@ -170,10 +205,13 @@ Falls Jimdo eigene Dateien oder externe Links unterstützt:
 
 ```html
 <link rel="stylesheet" href="style.css">
+<script src="tent-types.js"></script>
+<script src="recipe-store.js"></script>
 <script src="app.js"></script>
+<script src="admin.js"></script>
 ```
 
-Die Pfade müssen je nach Jimdo-Ablage angepasst werden.
+Die Dateien muessen gemeinsam erreichbar sein und in dieser Reihenfolge geladen werden, damit Rezeptdaten und Admin-Funktionen verfuegbar sind.
 
 ## Browser-Kompatibilität
 

@@ -6,98 +6,183 @@
   <meta name="theme-color" content="#1f4d40">
   <title>Materialrechner | Pfadfinder Schiefbahn</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <div class="scroll-progress" aria-hidden="true"></div>
-  <div class="bg-noise" aria-hidden="true"></div>
-  <header class="app-header">
-    <div class="app-header__inner">
-      <img src="Logo/logo.png" alt="Logo Pfadfinder Schiefbahn" class="header-logo">
-      <p class="eyebrow">Pfadfinder Schiefbahn</p>
-      <h1>Schwarzzelt Materialrechner</h1>
-      <p class="intro">So gehst du vor:</p>
-      <ol class="intro-steps">
-        <li>Zeltart auswählen und Menge festlegen.</li>
-        <li>Aufbauoption (Mittelstange oder Dreibein) einstellen.</li>
-        <li>Stückliste kopieren, teilen oder als Textansicht öffnen.</li>
-      </ol>
+  <div id="appView">
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <div class="bg-noise" aria-hidden="true"></div>
+    <header class="app-header">
+      <div class="app-header__inner">
+        <img src="Logo/logo.png" alt="Logo Pfadfinder Schiefbahn" class="header-logo">
+        <p class="eyebrow">Pfadfinder Schiefbahn</p>
+        <h1>Schwarzzelt Materialrechner</h1>
+        <p class="intro">So gehst du vor:</p>
+        <ol class="intro-steps">
+          <li>Zeltart auswählen und Menge festlegen.</li>
+          <li>Aufbauoption (Mittelstange oder Dreibein) einstellen.</li>
+          <li>Stückliste kopieren, teilen oder als Textansicht öffnen.</li>
+        </ol>
 
-      <div class="preference-toolbar preference-toolbar--header" aria-label="Anzeigeoptionen">
-        <button id="themeModeButton" class="button button--secondary preference-button" type="button" data-action="theme" aria-pressed="false">
-          Design: System
-        </button>
-        <button id="contrastButton" class="button button--secondary preference-button" type="button" data-action="contrast" aria-pressed="false">
-          Kontrast: Normal
-        </button>
+        <div class="preference-toolbar preference-toolbar--header" aria-label="Anzeigeoptionen">
+          <button id="themeModeButton" class="button button--secondary preference-button" type="button" data-action="theme" aria-pressed="false">
+            Design: System
+          </button>
+          <button id="contrastButton" class="button button--secondary preference-button" type="button" data-action="contrast" aria-pressed="false">
+            Kontrast: Normal
+          </button>
+        </div>
       </div>
+    </header>
+
+    <main class="app-shell">
+      <section aria-labelledby="tent-selection-title" class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Auswahl</p>
+            <h2 id="tent-selection-title">Zeltarten</h2>
+          </div>
+
+          <div class="selection-actions">
+            <button id="resetButton" class="button button--secondary" type="button">
+              Zurücksetzen
+            </button>
+            <button id="undoResetButton" class="button button--secondary" type="button" hidden>
+              Rückgängig
+            </button>
+          </div>
+        </div>
+
+        <div id="tentCards" class="tent-grid" aria-live="polite"></div>
+
+        <details class="setup-help">
+          <summary>Hilfe zu Aufbauoptionen</summary>
+          <ul>
+            <li><strong>Mittelstange:</strong> klassischer Aufbau mit einer zentralen Stange.</li>
+            <li><strong>Dreibein:</strong> Aufbau mit drei Stangen, oft stabil bei Wind.</li>
+            <li><strong>Spinne/Teller:</strong> zwei Aufbauvarianten der Großraumjurte.</li>
+          </ul>
+        </details>
+
+        <div class="setup-help__admin-wrap">
+          <button id="openAdminButton" class="button button--secondary setup-help__admin-button" type="button">
+            Admin Rezepte
+          </button>
+        </div>
+      </section>
+
+      <section aria-labelledby="bom-title" class="panel bom-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">BOM</p>
+            <h2 id="bom-title">Stückliste</h2>
+          </div>
+
+          <div class="action-buttons">
+            <button id="copyButton" class="button button--primary" type="button">
+              Stückliste kopieren
+            </button>
+            <button id="openTextViewButton" class="button button--secondary" type="button">
+              Textansicht öffnen
+            </button>
+          </div>
+        </div>
+
+        <div id="copyStatus" class="copy-status" role="status" aria-live="polite"></div>
+        <div id="bomOutput" class="bom-output"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Von Andre F.</p>
+    </footer>
+
+    <div class="preference-toolbar preference-toolbar--mobile" aria-label="Anzeigeoptionen mobil">
+      <button id="themeModeButtonMobile" class="button button--secondary preference-button" type="button" data-action="theme" aria-pressed="false">
+        Design: System
+      </button>
+      <button id="contrastButtonMobile" class="button button--secondary preference-button" type="button" data-action="contrast" aria-pressed="false">
+        Kontrast: Normal
+      </button>
     </div>
-  </header>
-
-  <main class="app-shell">
-    <section aria-labelledby="tent-selection-title" class="panel">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Auswahl</p>
-          <h2 id="tent-selection-title">Zeltarten</h2>
-        </div>
-
-        <div class="selection-actions">
-          <button id="resetButton" class="button button--secondary" type="button">
-            Zurücksetzen
-          </button>
-          <button id="undoResetButton" class="button button--secondary" type="button" hidden>
-            Rückgängig
-          </button>
-        </div>
-      </div>
-
-      <div id="tentCards" class="tent-grid" aria-live="polite"></div>
-
-      <details class="setup-help">
-        <summary>Hilfe zu Aufbauoptionen</summary>
-        <ul>
-          <li><strong>Mittelstange:</strong> klassischer Aufbau mit einer zentralen Stange.</li>
-          <li><strong>Dreibein:</strong> Aufbau mit drei Stangen, oft stabil bei Wind.</li>
-          <li><strong>Spinne/Teller:</strong> zwei Aufbauvarianten der Großraumjurte.</li>
-        </ul>
-      </details>
-    </section>
-
-    <section aria-labelledby="bom-title" class="panel bom-panel">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">BOM</p>
-          <h2 id="bom-title">Stückliste</h2>
-        </div>
-
-        <div class="action-buttons">
-          <button id="copyButton" class="button button--primary" type="button">
-            Stückliste kopieren
-          </button>
-          <button id="openTextViewButton" class="button button--secondary" type="button">
-            Textansicht öffnen
-          </button>
-        </div>
-      </div>
-
-      <div id="copyStatus" class="copy-status" role="status" aria-live="polite"></div>
-      <div id="bomOutput" class="bom-output"></div>
-    </section>
-  </main>
-
-  <footer class="app-footer">
-    <p>Von Andre F.</p>
-  </footer>
-
-  <div class="preference-toolbar preference-toolbar--mobile" aria-label="Anzeigeoptionen mobil">
-    <button id="themeModeButtonMobile" class="button button--secondary preference-button" type="button" data-action="theme" aria-pressed="false">
-      Design: System
-    </button>
-    <button id="contrastButtonMobile" class="button button--secondary preference-button" type="button" data-action="contrast" aria-pressed="false">
-      Kontrast: Normal
-    </button>
   </div>
 
+  <section id="adminHost" class="admin-shell" hidden>
+    <header class="admin-header panel">
+      <p class="eyebrow">Admin</p>
+      <h1>Zelt-Rezepte bearbeiten</h1>
+      <p class="admin-intro">Rezepte lokal bearbeiten, pruefen, speichern und per JSON importieren/exportieren.</p>
+      <button id="closeAdminButton" class="button button--secondary admin-back" type="button">Zurueck zum Rechner</button>
+    </header>
+
+    <section id="lockPanel" class="panel admin-lock" aria-labelledby="lockTitle">
+      <h2 id="lockTitle">PIN erforderlich</h2>
+      <form id="pinForm" class="admin-lock__form">
+        <label for="pinInput">Admin-PIN</label>
+        <input id="pinInput" name="pin" type="password" autocomplete="off" required>
+        <button class="button button--primary" type="submit">Entsperren</button>
+      </form>
+      <p id="pinStatus" class="admin-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="adminPanel" class="panel" hidden>
+      <div class="admin-toolbar">
+        <button id="saveButton" class="button button--primary" type="button">Speichern</button>
+        <button id="exportButton" class="button button--secondary" type="button">Export JSON</button>
+        <button id="importButton" class="button button--secondary" type="button">Import JSON</button>
+        <button id="resetDefaultsButton" class="button button--secondary" type="button">Defaults laden</button>
+      </div>
+
+      <input id="importFileInput" type="file" accept="application/json" hidden>
+
+      <div class="admin-selectors">
+        <label>
+          Zelt
+          <select id="tentSelect"></select>
+        </label>
+        <label>
+          Rezeptbereich
+          <select id="scopeSelect"></select>
+        </label>
+      </div>
+
+      <div class="admin-library">
+        <h3>Komponenten-Bibliothek</h3>
+        <div class="admin-library__controls">
+          <input id="librarySearchInput" type="search" placeholder="Suche nach ID oder Name">
+          <button id="addFromLibraryButton" class="button button--secondary" type="button">Auswahl hinzufuegen</button>
+        </div>
+        <select id="libraryResults" size="6" aria-label="Komponenten-Bibliothek"></select>
+      </div>
+
+      <div class="admin-table-actions">
+        <button id="addRowButton" class="button button--secondary" type="button">Leere Zeile</button>
+        <button id="duplicateTentButton" class="button button--secondary" type="button">Zelt duplizieren</button>
+      </div>
+
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Kennzeichnung</th>
+              <th>Menge</th>
+              <th>Aktion</th>
+            </tr>
+          </thead>
+          <tbody id="componentsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div id="validationBox" class="admin-validation" aria-live="polite"></div>
+      <p id="adminStatus" class="admin-status" role="status" aria-live="polite"></p>
+    </section>
+  </section>
+
+  <script src="tent-types.js"></script>
+  <script src="recipe-store.js"></script>
   <script src="app.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>

@@ -1,98 +1,10 @@
+(() => {
 /*
   Materialrechner Pfadfinder Schiefbahn
   Vanilla JavaScript, keine externen Abhängigkeiten.
-
-  Die Materialdaten stehen bewusst zentral in diesem Objekt.
-  Mengen, Bezeichnungen und Kennzeichnungen können später hier angepasst werden.
 */
-const tentTypes = {
-  jurte: {
-    label: "Jurte",
-    description: "Normale Jurte",
-    variants: {
-      standard: {
-        label: "Standard",
-        components: [
-          { id: "kreuz_jurte", label: "Kreuz", marking: "Kennzeichnung später eintragen", qty: 1 },
-          { id: "seitenstange_klein_jurte", label: "Seitenstange klein (Jurte)", marking: "Kennzeichnung später eintragen", qty: 12 },
-          { id: "abspannschnur_jurte", label: "Abspannschnur", marking: "Kennzeichnung später eintragen", qty: 12 },
-          { id: "hering_jurte", label: "Hering", marking: "Kennzeichnung später eintragen", qty: 13 }
-        ]
-      }
-    },
-    poleOptions: {
-      fixed: [
-        { id: "mittelstange_set_jurte", label: "Mittelstangen-Set Jurte (2 Stangen + 1 Verbinder)", marking: "Kennzeichnung später eintragen", qty: 1 },
-        { id: "schraubfuss_jurte", label: "Schraubfuß", marking: "Kennzeichnung später eintragen", qty: 1 }
-      ],
-      tripod: [
-        { id: "dreibein_stange_jurte", label: "Dreibein-Stange", marking: "Kennzeichnung später eintragen", qty: 3 },
-        { id: "dreibein_verbinder_jurte", label: "Dreibein-Verbinder", marking: "Kennzeichnung später eintragen", qty: 1 },
-        { id: "dreibein_fuss_jurte", label: "Dreibein-Fuß", marking: "Kennzeichnung später eintragen", qty: 3 }
-      ]
-    }
-  },
-
-  grossraumjurte: {
-    label: "Großraumjurte",
-    description: "Große Jurte",
-    variants: {
-      spinne: {
-        label: "Spinne",
-        components: [
-          { id: "metallspinne_grossraum", label: "Metallspinne", marking: "Kennzeichnung später eintragen", qty: 1 },
-          { id: "stange_spinne_grossraum", label: "Stange (Spinne)", marking: "Kennzeichnung später eintragen", qty: 9 },
-          { id: "verbinder_spinne_grossraum", label: "Verbinder (Spinne)", marking: "Kennzeichnung später eintragen", qty: 6 },
-          { id: "fuss_spinne_grossraum", label: "Fuß (Spinne)", marking: "Kennzeichnung später eintragen", qty: 3 },
-          { id: "seitenstange_grossraum", label: "Seitenstange Großraumjurte", marking: "Kennzeichnung später eintragen", qty: 16 },
-          { id: "abspannschnur_grossraum", label: "Abspannschnur", marking: "Kennzeichnung später eintragen", qty: 16 },
-          { id: "hering_grossraum", label: "Hering", marking: "Kennzeichnung später eintragen", qty: 19 }
-        ]
-      },
-      teller: {
-        label: "Teller",
-        components: [
-          { id: "teller_set_grossraum", label: "Teller + 8 Ketten + Karabiner", marking: "Kennzeichnung später eintragen", qty: 1 },
-          { id: "stange_teller_grossraum", label: "Stange (Teller)", marking: "Kennzeichnung später eintragen", qty: 6 },
-          { id: "verbinder_teller_grossraum", label: "Verbinder (Teller)", marking: "Kennzeichnung später eintragen", qty: 3 },
-          { id: "fuss_teller_grossraum", label: "Fuß (Teller)", marking: "Kennzeichnung später eintragen", qty: 3 },
-          { id: "seitenstange_grossraum", label: "Seitenstange Großraumjurte", marking: "Kennzeichnung später eintragen", qty: 16 },
-          { id: "abspannschnur_grossraum", label: "Abspannschnur", marking: "Kennzeichnung später eintragen", qty: 16 },
-          { id: "hering_grossraum", label: "Hering", marking: "Kennzeichnung später eintragen", qty: 17 }
-        ]
-      }
-    },
-    poleOptions: {
-      fixed: [
-        { id: "mittelstange_set_grossraum", label: "Mittelstangen-Set Großraumjurte (2 Stangen + 1 Verbinder)", marking: "Kennzeichnung später eintragen", qty: 1 },
-        { id: "schraubfuss_grossraum", label: "Schraubfuß", marking: "Kennzeichnung später eintragen", qty: 1 }
-      ],
-      tripod: [
-        { id: "dreibein_stange_grossraum", label: "Dreibein-Stange", marking: "Kennzeichnung später eintragen", qty: 3 },
-        { id: "dreibein_verbinder_grossraum", label: "Dreibein-Verbinder", marking: "Kennzeichnung später eintragen", qty: 1 },
-        { id: "dreibein_fuss_grossraum", label: "Dreibein-Fuß", marking: "Kennzeichnung später eintragen", qty: 3 }
-      ]
-    }
-  },
-
-  kohte: {
-    label: "Kohte",
-    description: "Kohte",
-    components: [
-      { id: "kohtenplane", label: "Kohtenplane", marking: "Kennzeichnung später eintragen", qty: 4 },
-      { id: "seitenstange_kohte", label: "Seitenstange Kohte", marking: "Kennzeichnung später eintragen", qty: 8 }
-    ],
-    poleOptions: {
-      fixed: [
-        { id: "mittelstange_kohte", label: "Mittelstange Kohte", marking: "Kennzeichnung später eintragen", qty: 1 }
-      ],
-      tripod: [
-        { id: "dreibein_stange", label: "Dreibein-Stange", marking: "Kennzeichnung später eintragen", qty: 3 },
-        { id: "dreibein_verbinder", label: "Dreibein-Verbinder", marking: "Kennzeichnung später eintragen", qty: 1 }
-      ]
-    }
-  }
-};
+const { getTentTypes } = window.recipeStore;
+const tentTypes = getTentTypes();
 
 const STORAGE_KEY = "pfadfinder-schiefbahn-materialrechner-state";
 const PREFERENCES_STORAGE_KEY = "pfadfinder-schiefbahn-materialrechner-preferences";
@@ -1013,3 +925,4 @@ function showCopyStatus(message) {
     copyStatusEl.textContent = "";
   }, 2500);
 }
+})();
